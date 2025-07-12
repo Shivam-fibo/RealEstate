@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import connectDB from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
+import propertyRoutes from './routes/propertyRoutes.js';
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
-
+app.use('/api/property', propertyRoutes);
 
 
 
