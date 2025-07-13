@@ -12,15 +12,11 @@ const propertySchema = new mongoose.Schema({
     min: [0, 'Price cannot be negative']
   },
   location: {
-    city: {
-      type: String,
-      required: [true, 'City is required']
-    },
-    area: {
-      type: String,
-      required: [true, 'Area is required']
-    },
-  },
+  type: String,
+  required: [true, 'Full address (location) is required'],
+  trim: true
+},
+
   bhk: {
     type: Number,
     required: [true, 'BHK configuration is required'],

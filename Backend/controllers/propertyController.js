@@ -93,22 +93,18 @@ export const createProperty = async (req, res) => {
 
     const uploadedImages = await Promise.all(imageUploadPromises);
 
-    // Parse location if it's a string
-    let locationObj;
-    try {
-      locationObj = typeof location === 'string' ? JSON.parse(location) : location;
-    } catch (error) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid location format' 
-      });
-    }
+    if (!location || typeof location !== 'string') {
+  return res.status(400).json({
+    success: false,
+    message: 'Location must be a non-empty string'
+  });
+}
 
-    // Create property with image URLs
+
     const property = await Property.create({
       title,
       price: Number(price),
-      location: locationObj,
+      location: location,
       bhk: Number(bhk),
       carpetArea: Number(carpetArea),
       builtUpArea: Number(builtUpArea),
@@ -141,7 +137,6 @@ export const createProperty = async (req, res) => {
   }
 };
 
-
 export const deleteProperty = async (req, res) => {
   try {
     const { id } = req.params;
@@ -152,14 +147,18 @@ export const deleteProperty = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Property not found' });
     }
 
-    // Delete images from Cloudinary
-    const deletePromises = property.images.map(img => cloudinary.uploader.destroy(img.publicId));
+
+    const deletePromises = property.images
+      .filter(img => img.publicId)
+      .map(img => cloudinary.uploader.destroy(img.publicId));
+
     await Promise.all(deletePromises);
 
     // Remove from DB
     await property.deleteOne();
 
     res.status(200).json({ success: true, message: 'Property deleted successfully' });
+
   } catch (error) {
     console.error('Error deleting property:', error);
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
@@ -179,14 +178,10 @@ export const updateProperty = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Property not found' });
     }
 
-  
-    if (updates.location && typeof updates.location === 'string') {
-      try {
-        updates.location = JSON.parse(updates.location);
-      } catch (err) {
-        return res.status(400).json({ success: false, message: 'Invalid location format' });
-      }
-    }
+ if (updates.location && typeof updates.location !== 'string') {
+  return res.status(400).json({ success: false, message: 'Location must be a string' });
+}
+
 
     // Convert amenities string to array if necessary
     if (updates.amenities && typeof updates.amenities === 'string') {
