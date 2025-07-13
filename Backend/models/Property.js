@@ -77,11 +77,6 @@ const propertySchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  postedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
   isActive: {
     type: Boolean,
     default: true

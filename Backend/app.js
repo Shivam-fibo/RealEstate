@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import propertyRoutes from './routes/propertyRoutes.js';
-
+import builderRoutes from './routes/builderRoutes.js';
 dotenv.config();
 
 // Connect to database
@@ -26,6 +26,7 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/property', propertyRoutes);
+app.use('/api/builder', builderRoutes);
 
 
 

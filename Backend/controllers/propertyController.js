@@ -124,7 +124,6 @@ export const createProperty = async (req, res) => {
         url: img.secure_url,
         publicId: img.public_id
       })),
-      postedBy: req.user._id
     });
 
     res.status(201).json({
@@ -139,5 +138,92 @@ export const createProperty = async (req, res) => {
       message: 'Error creating property',
       error: error.message
     });
+  }
+};
+
+
+export const deleteProperty = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const property = await Property.findById(id);
+
+    if (!property) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+
+    // Delete images from Cloudinary
+    const deletePromises = property.images.map(img => cloudinary.uploader.destroy(img.publicId));
+    await Promise.all(deletePromises);
+
+    // Remove from DB
+    await property.deleteOne();
+
+    res.status(200).json({ success: true, message: 'Property deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting property:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
+
+
+
+export const updateProperty = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const property = await Property.findById(id);
+    if (!property) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+
+  
+    if (updates.location && typeof updates.location === 'string') {
+      try {
+        updates.location = JSON.parse(updates.location);
+      } catch (err) {
+        return res.status(400).json({ success: false, message: 'Invalid location format' });
+      }
+    }
+
+    // Convert amenities string to array if necessary
+    if (updates.amenities && typeof updates.amenities === 'string') {
+      updates.amenities = updates.amenities.split(',').map(a => a.trim());
+    }
+
+    // Optional: replace images if new ones are uploaded
+    if (req.files && req.files.length > 0) {
+      // Delete old images from Cloudinary
+      const deletePromises = property.images.map(img =>
+        cloudinary.uploader.destroy(img.publicId)
+      );
+      await Promise.all(deletePromises);
+
+      // Upload new images
+      const imageUploadPromises = req.files.map(file =>
+        uploadToCloudinary(file.buffer)
+      );
+      const uploadedImages = await Promise.all(imageUploadPromises);
+
+      updates.images = uploadedImages.map(img => ({
+        url: img.secure_url,
+        publicId: img.public_id
+      }));
+    }
+
+    // Update property
+    Object.assign(property, updates);
+    const updatedProperty = await property.save();
+
+    res.status(200).json({
+      success: true,
+      data: updatedProperty
+    });
+
+  } catch (error) {
+    console.error('Error updating property:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
