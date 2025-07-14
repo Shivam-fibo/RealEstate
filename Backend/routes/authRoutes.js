@@ -3,14 +3,18 @@ import {
   register,
   login,
   logout,
+ forgotPassword,
+  verifyResetOTP,
   resetPassword,
-  getCurrentUser,
-  resendOTP
+  verifyEmail,
+  getCurrentUser
 } from '../controllers/authController.js';
 import { protect, authorize } from '../middleware/auth.js';
 import {
   validateRegister,
   validateLogin,
+  validateEmail,
+  validateResetPassword 
 } from '../middleware/validation.js';
 
 const router = express.Router();
@@ -18,28 +22,15 @@ const router = express.Router();
 // Public routes
 router.post('/register', validateRegister, register);
 router.post('/login', validateLogin, login);
+router.post("/verifyEmail",validateEmail,verifyEmail )
 router.post('/logout', logout);
-router.post('/reset-password', resetPassword);
-router.post('/resend-otp', resendOTP);
+
+router.post('/forgot-password', forgotPassword);
+router.post('/verify-reset-otp', verifyResetOTP);
+router.post('/reset-password', validateResetPassword, resetPassword);
 
 // Protected routes
 router.get('/me', protect, getCurrentUser);
 
-// Example protected routes with role-based access
-router.get('/builder-only', protect, authorize('builder'), (req, res) => {
-  res.json({
-    success: true,
-    message: 'This is a builder-only route',
-    user: req.user
-  });
-});
-
-router.get('/user-only', protect, authorize('user'), (req, res) => {
-  res.json({
-    success: true,
-    message: 'This is a user-only route',
-    user: req.user
-  });
-});
 
 export default router;

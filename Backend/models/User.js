@@ -20,11 +20,22 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters']
   },
-  role: {
+  phoneNumber: {
+    type: String,  
+    required: [true, 'Phone number is required'],
+    match: [/^\d{10}$/, 'Please enter a valid 10-digit phone number']
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailOTP: {
     type: String,
-    enum: ['user', 'builder'],
-    default: 'user',
-    required: true
+    default: null
+  },
+  emailOTPExpires: {
+    type: Date,
+    default: null
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
@@ -36,7 +47,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Hash password before saving
+
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
@@ -49,16 +60,15 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Compare password method
+
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate reset token method
 userSchema.methods.generateResetToken = function() {
   const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
   this.resetPasswordToken = resetToken;
-  this.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
 

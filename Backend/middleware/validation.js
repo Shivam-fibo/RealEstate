@@ -15,11 +15,7 @@ export const validateRegister = [
   body('password')
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long'),
-  
-  body('role')
-    .optional()
-    .isIn(['user', 'builder'])
-    .withMessage('Role must be either user or builder')
+
 ];
 
 // Login validation
@@ -33,6 +29,19 @@ export const validateLogin = [
     .notEmpty()
     .withMessage('Password is required')
 ];
+
+export const validateEmail = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email'),
+
+    
+  body('otp')
+    .isLength({ min: 6, max: 6 })
+    .withMessage('OTP must be 6 digits'),
+
+]
 
 // Forget password validation
 
@@ -51,4 +60,24 @@ export const validateResetPassword = [
   body('newPassword')
     .isLength({ min: 6 })
     .withMessage('New password must be at least 6 characters long')
+];
+
+
+// Add these validation rules
+export const validateForgotPassword = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email')
+];
+
+export const validateResetOTP = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email'),
+  
+  body('otp')
+    .isLength({ min: 6, max: 6 })
+    .withMessage('OTP must be 6 digits')
 ];

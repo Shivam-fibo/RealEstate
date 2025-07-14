@@ -49,8 +49,8 @@ export const protect = async (req, res, next) => {
   }
 };
 
-// Role-based access control
-export const authorize = (...roles) => {
+
+export const authorize = () => {
   return async (req, res, next) => {
     try {
       const user = await User.findById(req.user.userId);
@@ -62,13 +62,7 @@ export const authorize = (...roles) => {
         });
       }
 
-      if (!roles.includes(user.role)) {
-        return res.status(403).json({
-          success: false,
-          message: 'Access denied. Insufficient permissions.'
-        });
-      }
-
+      
       next();
     } catch (error) {
       res.status(500).json({
