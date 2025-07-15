@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-export default function Login({ onLogin }) {
+import { useAuth } from '../App'
+import { Home, Mail, CheckCircle, Lock, Shield } from 'lucide-react'
+export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -14,7 +15,7 @@ export default function Login({ onLogin }) {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const navigate = useNavigate()
-
+  const { onLogin } = useAuth()
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -31,14 +32,15 @@ export default function Login({ onLogin }) {
       })
 
       const data = await response.json()
-
-      if (data.success) {
+      console.log(data)
+      if (data.success == true) {
         onLogin(data.user)
-        navigate('/')
+        navigate('/dashboard')
       } else {
         setError(data.message || 'Login failed')
       }
     } catch (err) {
+      console.log(err)
       setError('Failed to connect to server')
     } finally {
       setLoading(false)
@@ -93,10 +95,10 @@ export default function Login({ onLogin }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          email: resetEmail, 
-          otp, 
-          newPassword 
+        body: JSON.stringify({
+          email: resetEmail,
+          otp,
+          newPassword
         })
       })
 
@@ -120,90 +122,153 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md relative">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        
-        {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
-        {successMessage && <div className="mb-4 p-2 bg-green-100 text-green-700 rounded">{successMessage}</div>}
-        
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Email</label>
-            <input
-              type="email"
-              className="w-full p-2 border rounded"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+        {/* Header */}
+        <div className="bg-blue-600 p-6 text-center">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <Home className="h-8 w-8 text-white" />
+            <span className="text-2xl font-bold text-white">RealEstate</span>
           </div>
-          
+          <h2 className="text-2xl font-bold text-white">Login to Your Account</h2>
+        </div>
+
+        {/* Messages */}
+        <div className="px-6 pt-4">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg flex items-center">
+              <X className="h-5 w-5 mr-2" />
+              {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg flex items-center">
+              <CheckCircle className="h-5 w-5 mr-2" />
+              {successMessage}
+            </div>
+          )}
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleLogin} className="p-6">
+          <div className="mb-5">
+            <label className="block text-gray-700 text-sm font-medium mb-2">Email</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="email"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+          </div>
+
           <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Password</label>
-            <input
-              type="password"
-              className="w-full p-2 border rounded"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <label className="block text-gray-700 text-sm font-medium mb-2">Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="password"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
           </div>
-          
+
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all transform hover:scale-[1.02] disabled:opacity-70"
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Logging in...</span>
+              </>
+            ) : (
+              <>
+                <Lock className="h-5 w-5" />
+                <span>Login</span>
+              </>
+            )}
           </button>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowForgotPassword(true)}
+              className="text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
+          <div className="mt-4 text-center">
+            <p className="text-gray-600">Don't have an account?{' '}
+              <a href="/register" className="text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors">
+                Register
+              </a>
+            </p>
+          </div>
         </form>
-        
-        <div className="mt-4 text-center">
-          <button 
-            onClick={() => setShowForgotPassword(true)}
-            className="text-blue-500 hover:underline"
-          >
-            Forgot Password?
-          </button>
-        </div>
-        
-        <div className="mt-2 text-center">
-          <p className="text-gray-600">Don't have an account?{' '}
-            <a href="/register" className="text-blue-500 hover:underline">Register</a>
-          </p>
-        </div>
 
         {/* Forgot Password Modal */}
         {showForgotPassword && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg w-full max-w-md">
-              <h3 className="text-xl font-bold mb-4">Forgot Password</h3>
-              <form onSubmit={handleForgotPassword}>
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">Email</label>
-                  <input
-                    type="email"
-                    className="w-full p-2 border rounded"
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    required
-                  />
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+              <div className="bg-blue-600 p-6 text-center">
+                <h3 className="text-xl font-bold text-white">Forgot Password</h3>
+              </div>
+              <form onSubmit={handleForgotPassword} className="p-6">
+                <div className="mb-5">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="email"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="flex justify-end space-x-2">
+                <div className="flex justify-end space-x-3">
                   <button
                     type="button"
                     onClick={() => setShowForgotPassword(false)}
-                    className="px-4 py-2 border rounded"
+                    className="px-5 py-2.5 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300"
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center space-x-2 transition-colors disabled:opacity-70"
                     disabled={loading}
                   >
-                    {loading ? 'Sending...' : 'Send OTP'}
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="h-5 w-5" />
+                        <span>Send OTP</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
@@ -213,54 +278,81 @@ export default function Login({ onLogin }) {
 
         {/* Reset Password Modal */}
         {showResetPassword && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg w-full max-w-md">
-              <h3 className="text-xl font-bold mb-4">Reset Password</h3>
-              <form onSubmit={handleResetPassword}>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+              <div className="bg-blue-600 p-6 text-center">
+                <h3 className="text-xl font-bold text-white">Reset Password</h3>
+              </div>
+              <form onSubmit={handleResetPassword} className="p-6">
                 <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">OTP</label>
-                  <input
-                    type="text"
-                    className="w-full p-2 border rounded"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    required
-                  />
+                  <label className="block text-gray-700 text-sm font-medium mb-2">OTP</label>
+                  <div className="relative">
+                    <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter OTP"
+                      required
+                    />
+                  </div>
                 </div>
                 <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">New Password</label>
-                  <input
-                    type="password"
-                    className="w-full p-2 border rounded"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    required
-                  />
+                  <label className="block text-gray-700 text-sm font-medium mb-2">New Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="password"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">Confirm Password</label>
-                  <input
-                    type="password"
-                    className="w-full p-2 border rounded"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                  />
+                <div className="mb-6">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="password"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="flex justify-end space-x-2">
+                <div className="flex justify-end space-x-3">
                   <button
                     type="button"
                     onClick={() => setShowResetPassword(false)}
-                    className="px-4 py-2 border rounded"
+                    className="px-5 py-2.5 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300"
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center space-x-2 transition-colors disabled:opacity-70"
                     disabled={loading}
                   >
-                    {loading ? 'Resetting...' : 'Reset Password'}
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Resetting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-5 w-5" />
+                        <span>Reset Password</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </form>

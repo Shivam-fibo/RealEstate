@@ -1,11 +1,46 @@
 import React, { useState } from 'react';
 import { Search, Home, Users, Shield, Star, Phone, Mail, MapPin, Bed, Heart, Camera, Lock, CheckCircle, TrendingUp, Award, MessageCircle, ChevronRight, Menu, X } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../App';
+import { toast } from 'react-toastify';
 const RealEstateLanding = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [budgetRange, setBudgetRange] = useState([1000000, 5000000]);
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedBHK, setSelectedBHK] = useState('');
+  const { user, isAuthenticated, onLogout } = useAuth()
+
+  const handleClickDashboard = () => {
+    navigate("/dashboard");
+  };
+
+  const navigate = useNavigate();
+  const handleClickLogin = () => {
+    navigate("/login")
+  }
+
+  const handleClickRegister = () => {
+    navigate("/register")
+  }
+
+  const handleSearch = () => {
+    if (!isAuthenticated) {
+      toast.info('Please login first to search properties');
+      return;
+    }
+    navigate("/dashboard");
+  };
+
+
+
+  const handleViewProperties = () => {
+    if (!isAuthenticated) {
+      toast.info('Please login first to view properties');
+      return;
+    }
+    navigate("/dashboard");
+  };
+
 
   const popularLocations = [
     { id: 1, name: "Gurgaon", price: "₹45L onwards", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&h=300&fit=crop" },
@@ -14,8 +49,8 @@ const RealEstateLanding = () => {
     { id: 4, name: "Bangalore", price: "₹50L onwards", image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop" },
     { id: 5, name: "Pune", price: "₹40L onwards", image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop" },
     { id: 6, name: "Hyderabad", price: "₹38L onwards", image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop" }
-    
-    
+
+
 
   ];
 
@@ -51,20 +86,45 @@ const RealEstateLanding = () => {
               <Home className="h-8 w-8 text-blue-600" />
               <span className="text-2xl font-bold text-gray-900">RealEsate</span>
             </div>
-            
+
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#properties" className="text-gray-700 hover:text-blue-600 transition-colors">Properties</a>
-              <a href="#builders" className="text-gray-700 hover:text-blue-600 transition-colors">Builders</a>
-              <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors">About</a>
-              <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                Login / Sign Up
-              </button>
+             <div className="hidden md:flex items-center space-x-8">
+              {isAuthenticated ? (
+                <>
+                  <span className="text-gray-700">Welcome, {user?.name}</span>
+                  <button 
+                    onClick={handleClickDashboard}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Dashboard
+                  </button>
+                  <button 
+                    onClick={onLogout}
+                    className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={handleClickRegister}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Register
+                  </button>
+                  <button 
+                    onClick={handleClickLogin}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Login
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
+            <button
               className="md:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -76,13 +136,38 @@ const RealEstateLanding = () => {
           {isMenuOpen && (
             <div className="md:hidden mt-4 py-4 border-t">
               <div className="flex flex-col space-y-4">
-                <a href="#properties" className="text-gray-700 hover:text-blue-600 transition-colors">Properties</a>
-                <a href="#builders" className="text-gray-700 hover:text-blue-600 transition-colors">Builders</a>
-                <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors">About</a>
-                <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full">
-                  Login / Sign Up
-                </button>
+                {isAuthenticated ? (
+                  <>
+                    <span className="text-gray-700 text-center">Welcome, {user?.name}</span>
+                    <button 
+                      onClick={handleClickDashboard}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Dashboard
+                    </button>
+                    <button 
+                      onClick={onLogout}
+                      className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button 
+                      onClick={handleClickRegister}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Register
+                    </button>
+                    <button 
+                      onClick={handleClickLogin}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Login
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -92,7 +177,7 @@ const RealEstateLanding = () => {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white">
         <div className="absolute inset-0 bg-black opacity-40"></div>
-        <div 
+        <div
           className="relative min-h-screen flex items-center"
           style={{
             backgroundImage: 'url("https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&h=1080&fit=crop")',
@@ -115,7 +200,15 @@ const RealEstateLanding = () => {
                 </button>
                 <button className="bg-white hover:bg-gray-100 text-gray-900 px-8 py-4 rounded-lg text-lg font-semibold flex items-center justify-center space-x-2 transition-all transform hover:scale-105">
                   <Lock className="h-5 w-5" />
-                  <span>Login / Sign Up</span>
+                 {!isAuthenticated && (
+                <button 
+                  onClick={handleClickLogin}
+                  className="bg-white hover:bg-gray-100 text-gray-900 px-8 py-4 rounded-lg text-lg font-semibold flex items-center justify-center space-x-2 transition-all transform hover:scale-105"
+                >
+                  <Lock className="h-5 w-5" />
+                  <span>Login</span>
+                </button>
+              )}
                 </button>
               </div>
             </div>
@@ -140,8 +233,8 @@ const RealEstateLanding = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">City / Locality</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="Enter city or locality"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -156,10 +249,13 @@ const RealEstateLanding = () => {
                 </select>
               </div>
               <div className="flex items-end">
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all">
-                  <Search className="h-5 w-5" />
-                  <span>Search</span>
-                </button>
+                  <button 
+          onClick={handleSearch}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all"
+        >
+          <Search className="h-5 w-5" />
+          <span>Search</span>
+        </button>
               </div>
             </div>
           </div>
@@ -177,8 +273,8 @@ const RealEstateLanding = () => {
             {popularLocations.map((location) => (
               <div key={location.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group">
                 <div className="relative">
-                  <img 
-                    src={location.image} 
+                  <img
+                    src={location.image}
                     alt={location.name}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -189,10 +285,13 @@ const RealEstateLanding = () => {
                   </div>
                 </div>
                 <div className="p-6">
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2">
-                    <span>View Properties</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
+                  <button 
+          onClick={handleViewProperties}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
+        >
+          <span>View Properties</span>
+          <ChevronRight className="h-4 w-4" />
+        </button>
                 </div>
               </div>
             ))}
@@ -325,8 +424,8 @@ const RealEstateLanding = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Stay Updated</h2>
             <p className="text-xl text-blue-100 mb-8">Get weekly updates on new properties and market trends</p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input 
-                type="email" 
+              <input
+                type="email"
                 placeholder="Enter your email"
                 className="flex-1 px-6 py-3 rounded-lg focus:ring-2 focus:ring-blue-300 focus:outline-none"
               />
@@ -403,7 +502,10 @@ const RealEstateLanding = () => {
 
       {/* Floating CTA */}
       <div className="fixed bottom-6 right-6 z-50">
-        <button className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+       <button 
+          onClick={handleSearch}
+          className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+        >
           <Search className="h-6 w-6" />
         </button>
       </div>
