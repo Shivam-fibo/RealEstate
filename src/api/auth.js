@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api/auth';
+const API_BASE_URL = 'https://real-esate-backend.vercel.app/api/auth';
 
 export const register = async (userData) => {
   const response = await fetch(`${API_BASE_URL}/register`, {

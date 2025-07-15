@@ -22,7 +22,7 @@ export default function Register() {
     setError('')
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch('https://real-esate-backend.vercel.app/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export default function Register() {
     setError('')
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/verifyEmail', {
+      const response = await fetch('https://real-esate-backend.vercel.app/api/auth/verifyEmail', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
