@@ -34,8 +34,9 @@ export default function Login() {
       const data = await response.json()
       console.log(data)
       if (data.success == true) {
+        localStorage.setItem('userId', data.user.id);
         onLogin(data.user)
-        navigate('/dashboard')
+        navigate('/property')
       } else {
         setError(data.message || 'Login failed')
       }

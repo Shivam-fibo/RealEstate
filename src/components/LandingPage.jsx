@@ -11,7 +11,7 @@ const RealEstateLanding = () => {
   const { user, isAuthenticated, onLogout } = useAuth()
 
   const handleClickDashboard = () => {
-    navigate("/dashboard");
+    navigate("/property");
   };
 
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const RealEstateLanding = () => {
       toast.info('Please login first to search properties');
       return;
     }
-    navigate("/dashboard");
+    navigate("/property");
   };
 
 
@@ -38,7 +38,7 @@ const RealEstateLanding = () => {
       toast.info('Please login first to view properties');
       return;
     }
-    navigate("/dashboard");
+    navigate("/property");
   };
 
 
