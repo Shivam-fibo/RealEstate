@@ -5,7 +5,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import Login from './components/Login';
 import Register from './components/Register';
-import Dashboard from './components/Dashboard';
 import LandingPage from './components/LandingPage';
 import PropertyList from './components/PropertyList';
 import PropertyPage from './components/PropertyPage';
@@ -62,11 +61,11 @@ export default function App() {
         <ToastContainer position="top-center" autoClose={3000} />
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
-          <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
-          <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-          <Route path="/property/:id" element={user ? <PropertyPage /> : <Navigate to="/login" />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/property" />} />
+          <Route path="/register" element={!user ? <Register /> : <Navigate to="/property" />} />
           <Route path="/property" element={user ? <PropertyList /> : <Navigate to="/login" />} />
+          <Route path="/property/:id" element={user ? <PropertyPage /> : <Navigate to="/login" />} />
+  
         </Routes>
       </AuthContext.Provider>
     </BrowserRouter>
